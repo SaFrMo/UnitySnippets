@@ -2,21 +2,42 @@
 using System.Collections;
 
 public class Timer {
+
+	// ALL-PURPOSE TIMER FOR UNITY (C#)
+
+	/* example:
+	 * 
+	 * // creates a timer that will "ring" in 5 seconds (5f) and will not loop (false)
+	 * Timer t = new Timer (5f, false);
+	 * 
+	 * // run timer every frame
+	 * void Update () {
+	 * 		// RunTimer() returns true if the correct amount of time has passed
+	 * 		if (t.RunTimer())
+	 * 			// and after 5 seconds (see above), "Done" will print once
+	 * 			print "Done!";
+	 * }
+	 * 
+	 * 
+	 * 
+	 */
 	
-	// START HERE
-	public Timer (float dMinimumLength, float dMaximumLength, bool toLoop) {
+	// This timer provides a random length of time between dMinimum and dMaximum, defaulting to a non-looping timer
+	public Timer (float dMinimumLength, float dMaximumLength, bool toLoop = false) {
 		minimumTimerLength = dMinimumLength;
 		maximumTimerLength = dMaximumLength;
 		useRandomTimerLengths = true;
 		loop = toLoop;
 	}
-	
-	public Timer (float dFixedLength, bool toLoop) {
+
+	// Provides a fixed-length timer, with looping turned off by default
+	public Timer (float dFixedLength, bool toLoop = false) {
 		fixedTimerLength = dFixedLength;
 		useRandomTimerLengths = false;
 		loop = toLoop;
 	}
-	
+
+	// Provides a random-length timer with a set number of repetitions
 	public Timer (float dMinimumLength, float dMaximumLength, int timesToLoop) {
 		minimumTimerLength = dMinimumLength;
 		maximumTimerLength = dMaximumLength;
@@ -25,7 +46,8 @@ public class Timer {
 		loopXTimes = true;
 		loopNumber = timesToLoop;
 	}
-	
+
+	// Provides a fixed-length timer with a set number of repetitions
 	public Timer (float dFixedLength, int timesToLoop) {
 		fixedTimerLength = dFixedLength;
 		loop = true;
@@ -33,22 +55,24 @@ public class Timer {
 		loopXTimes = true;
 		loopNumber = timesToLoop;
 	}
-	
-	//public bool useRandomTimerLengths = true;
-	public bool loop = true;
-	public bool loopXTimes = false;
+
+	// will the timer loop?
+	bool loop = true;
+	// will ther timer loop only a certain number of times?
+	bool loopXTimes = false;
+	// are we there yet?
 	bool done = false;
 	
 	// for random timer lengths
-	public float minimumTimerLength = 2f;
-	public float maximumTimerLength = 5f;
-	public bool useRandomTimerLengths = true;
+	float minimumTimerLength;
+	float maximumTimerLength;
+	bool useRandomTimerLengths = true;
 	
 	// for fixed timer length
-	public float fixedTimerLength = 4f;
+	float fixedTimerLength;
 	
 	// how many times to loop
-	public int loopNumber = 5;
+	int loopNumber;
 	int currentLoop = 1;
 	
 	// is the timer set?
@@ -60,7 +84,9 @@ public class Timer {
 	
 	// set or reset the timer
 	void SetTimer () {
+		// the frame this is called becomes our new zero
 		lastTrigger = Time.realtimeSinceStartup;
+		// use a fixed timer length or generate a random one
 		if (!useRandomTimerLengths) 
 			timerLength = fixedTimerLength;
 		else
@@ -76,15 +102,21 @@ public class Timer {
 			// set/reset timer
 			if (!timerSet) {
 				SetTimer();
-				timerSet = true;
 				return false;
 			}
+
+			// example "true" return:
+			// lastTrigger = 5.0 (the timer was set 5 seconds after startup)
+			// realTime = 8.0 (the game has been running for 8 seconds)
+			// timerLength = 3.0 (the timer is supposed to go off after 3 seconds)
+			// 8-5 >= 3, so RunTimer returns true
+
+			// this only triggers if the timer is to "ring" this frame
 			if (Time.realtimeSinceStartup >= lastTrigger + timerLength) {
 				
 				// exits loop
 				if (!loop) {
 					done = true;
-					//return false;
 				}
 				else if (loopXTimes) {
 					if (currentLoop < loopNumber) {
@@ -92,15 +124,18 @@ public class Timer {
 					}
 					else {
 						done = true;
-						//return false;
 					}
 				}
+
+				// flags that the timer needs to be reset
 				timerSet = false;
 				return true;
 			}
+			// not enough time has gone by
 			else
 				return false;
 		}
+		// timer's done
 		else 
 			return false;
 	}
