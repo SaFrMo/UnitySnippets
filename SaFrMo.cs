@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class SaFrMo {
 
@@ -34,5 +35,35 @@ public static class SaFrMo {
 	public static void RotateAndResize (Transform t, float rotationRate, float resizeRate) {
 		t.RotateAround (t.position, t.TransformDirection (Vector3.forward), rotationRate * Time.deltaTime);
 		t.localScale = Vector3.one * (Mathf.Sin (Time.time * resizeRate) + 2f);
+	}
+
+	/// <summary>
+	/// Creates a solid color box - avoids need to manually create solid-color textures
+	/// </summary>
+	/// <returns>The color.</returns>
+	/// <param name="color">Color.</param>
+	public static Texture2D CreateColor (Color color) {
+		Texture2D newTexture = new Texture2D (1, 1);
+		newTexture.SetPixel (0, 0, color);
+		newTexture.Apply();
+		return newTexture;
+	}
+
+	/// <summary>
+	/// Returns circle points. Think InfoAddict in Civ V.
+	/// </summary>
+	/// <param name="points">Points.</param>
+	/// <param name="radius">Radius.</param>
+	/// <param name="center">Center.</param>
+	public static List<float> DrawCirclePoints(int points, double radius, float centerX, float centerY)
+	{
+		double slice = 2 * Math.PI / points;
+		for (int i = 0; i < points; i++)
+		{
+			double angle = slice * i;
+			float newX = (float)(centerX + radius * Mathf.Cos(angle));
+			float newY = (float)(centerY + radius * Mathf.Sin(angle));
+			return new List<float>() { newX, newY };
+		}
 	}
 }
