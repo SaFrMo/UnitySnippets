@@ -12,9 +12,24 @@ public class WASDMovement : MonoBehaviour {
 
 	// rate at which to move
 	public float movementRate = 0.5f;
+	float movementRateCopy;
 
 	// where the rigidbody will move
 	Vector3 newPosition;
+
+	// account for momentum or no
+	public bool ignoreMomentum = true;
+
+	// freeze the player in place
+	public void Freeze (bool toFreeze) {
+		if (toFreeze) {
+			movementRate = 0;
+		}
+		else {
+			movementRate = movementRateCopy;
+		}
+	}
+
 
 	// MOVEMENT COMPONENT
 	// ====================
@@ -45,8 +60,14 @@ public class WASDMovement : MonoBehaviour {
 		rigidbody.MovePosition (newPosition);
 	}
 
+	void Start () {
+		movementRateCopy = movementRate;
+	}
 
 	protected void Update () {
 		Controls();
+		if (ignoreMomentum) {
+			rigidbody.velocity = Vector3.zero;
+		}
 	}
 }
